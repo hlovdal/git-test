@@ -803,7 +803,7 @@ future, please update to explicit specify what should be removed.
 
 test_re = re.compile(r'^test\.(?P<name>.*)\.command$')
 
-def process_all_tests_one_by_one(func):
+def process_all_tests_one_by_one(func, *args):
     cmd = ['git', 'config', '--get-regexp', '--null', '^test\.']
     out = check_output(cmd)
     lines = [line for line in out.split('\0') if line]
@@ -813,10 +813,10 @@ def process_all_tests_one_by_one(func):
         if m:
             name = m.group('name')
             command = value.rstrip()
-            func(name, command)
+            func(name, command, args)
 
 
-def print_test(name, command):
+def print_test(name, command, *args):
     command_lines = command.split('\n')
 
     if not command_lines:
