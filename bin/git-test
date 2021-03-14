@@ -803,7 +803,7 @@ future, please update to explicit specify what should be removed.
 
 test_re = re.compile(r'^test\.(?P<name>.*)\.command$')
 
-def cmd_list(parser, options):
+def process_all_tests_one_by_one(func):
     cmd = ['git', 'config', '--get-regexp', '--null', '^test\.']
     out = check_output(cmd)
     lines = [line for line in out.split('\0') if line]
@@ -813,18 +813,26 @@ def cmd_list(parser, options):
         if m:
             name = m.group('name')
             command = value.rstrip()
-            command_lines = command.split('\n')
+            func(name, command)
 
-            if not command_lines:
-                continue
 
-            print('%s:' % (name,))
-            if len(command_lines) == 1:
-                print('    command = %s' % (command,))
-            else:
-                print('    command:')
-                for command_line in command_lines:
-                    print('        %s' % (command_line,))
+def print_test(name, command):
+    command_lines = command.split('\n')
+
+    if not command_lines:
+        return
+
+    print('%s:' % (name,))
+    if len(command_lines) == 1:
+        print('    command = %s' % (command,))
+    else:
+        print('    command:')
+        for command_line in command_lines:
+            print('        %s' % (command_line,))
+
+
+def cmd_list(parser, options):
+    process_all_tests_one_by_one(print_test)
 
 
 def cmd_remove(parser, options):
