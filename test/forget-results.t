@@ -153,5 +153,12 @@ test_expect_success 'Missing --all or --all-tests argument produces warning' '
 '
 
 
+test_expect_success 'Should not give output on non-existent test' '
+	rm -f expected &&
+	touch expected &&
+	git-test forget-results --all -t this-test-does-not-exist >actual &&
+	test_cmp expected actual &&
+	true
+'
 
 test_done
